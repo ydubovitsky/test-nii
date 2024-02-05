@@ -4,17 +4,22 @@
         <div class="settings-dashboard">
             <div class="frame-settings">
                 <p>Интервал значений чисел:</p>
-                <Slider v-model="value" :step="1" class="w-14rem" />
-                <p>Частота генерации числе: 30 секунд</p>
-                <Slider v-model="value" />
+                <div class="frame-range">
+                    <InputText v-model.number="range[0]" width="50px" />
+                    <Slider v-model="range" range class="w-14rem" max=1000 />
+                    <InputText v-model.number="range[1]" maxlength="1000" />
+                </div>
+                <p>Частота генерации числе: {{ intervalValue }} секунд</p>
+                <Slider v-model="intervalValue" />
             </div>
             <div class="frame-actions">
                 <div class="buttons">
-                    <Button label="Начать" @click="sendMessage" />
-                    <Button label="Остановить" @click="getAllGeneratedNumbers" />
+                    <Button label="Начать" @click="randomInteger" />
+                    <Button v-if="!isStopped" label="Остановить" @click="stopGenerator" />
+                    <Button v-else label="Возобновить" @click="randomInteger" />
                     <Button label="Завершить" />
                 </div>
-                <p>Запуск №: 95</p>
+                <p>Запуск №: {{ counter }}</p>
             </div>
         </div>
         <!-- <InputText v-model.number="value" /> -->
@@ -26,7 +31,13 @@ export default {
     name: "SettingsView",
     data() {
         return {
-            value: 0
+            range: [],
+            isStopped: false,
+            counter: 0,
+            generatedNumber: 0,
+            intervalValue: 0,
+            intervalId: 0,
+            now: 0
         }
     },
     methods: {
@@ -37,7 +48,7 @@ export default {
                 {
                     value: 123,
                     isFavorite: true,
-                    
+
                 },
                 {
                     headers: {
@@ -47,7 +58,19 @@ export default {
         },
         getAllGeneratedNumbers() {
             axios.get('http://localhost:8080/number/all')
-        }
+        },
+        randomInteger() {
+            this.intervalId = setInterval(() => {
+                this.isStopped = false;
+                this.generatedNumber = Math.floor(this.range[0] + Math.random() * (this.range[1] + 1 - this.range[0]));
+                console.log(this.generatedNumber)
+                return this.generatedNumber;
+            }, this.intervalValue)
+        },
+        stopGenerator() {
+            this.isStopped = true;
+            clearInterval(this.intervalId);
+        },
     }
 }
 </script>
@@ -64,6 +87,19 @@ export default {
     gap: 24px;
     width: 350px;
     height: 174px;
+}
+
+.frame-range {
+    display: grid;
+    grid-template-columns: 36px 100% 36px;
+    gap: 8px;
+    align-items: center;
+    width: 100%;
+}
+
+.frame-range input {
+    width: 36px;
+    height: 32px;
 }
 
 .frame-actions {

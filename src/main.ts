@@ -10,6 +10,8 @@ import 'primevue/resources/themes/aura-light-green/theme.css'
 // Global components
 import Button from "primevue/button";
 import Slider from 'primevue/slider';
+import InputText from 'primevue/inputtext';
+import Dialog from 'primevue/dialog';
 
 // PrimeVue
 
@@ -23,5 +25,7 @@ app.use(router)
 app.use(PrimeVue);
 app.component('Button', Button);
 app.component('Slider', Slider);
+app.component('InputText', InputText);
+app.component('Dialog', Dialog);
 
 app.mount('#app')
